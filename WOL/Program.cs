@@ -17,7 +17,7 @@ namespace WOL
             if (args.Length == 2)
             {
                 string ip = args[0];
-                string mac = string.Join("", args[1].Split('-'));
+                string mac = args[1];
                 WakeFunction(ip, mac, 9);
             }
             else
@@ -36,9 +36,12 @@ namespace WOL
                                               SocketOptionName.Broadcast, 0);
             }
         }
-        static private void WakeFunction(string ip, string MAC_ADDRESS, int port)
+        static private void WakeFunction(string ip, string mac, int port)
         {
-            Console.WriteLine("Wake-on-LAN packet sent: ip:{0} mac:{1} port:{2}", ip, MAC_ADDRESS, port);
+            Console.WriteLine("Wake-on-LAN packet sent: ip:{0} mac:{1} port:{2}", ip, mac, port);
+
+            string MAC_ADDRESS = string.Join("", mac.Split('-'));
+            
             WOLClass client = new WOLClass();
 
             client.Connect(IPAddress.Parse(ip), port);
