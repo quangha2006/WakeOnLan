@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Globalization;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Text.RegularExpressions;
 
 namespace WOL
 {
@@ -13,15 +12,74 @@ namespace WOL
     {
         static void Main(string[] args)
         {
-            // http://jodies.de/ipcalc
-            if (args.Length == 2)
+            string ip = "";
+            string subnet = "";
+            string mac = "";
+            string ipBroadcast = "";
+
+            //Parse arguments
+            for (int i = 0; i < args.Length; i++)
             {
-                string ip = args[0];
-                string mac = args[1];
-                WakeFunction(ip, mac, 9);
+                if (args[i][0] == '-' && args[i].Length > 1)
+                {
+                    switch(args[i][1])
+                    {
+                        case 'i':
+                            if (args[i].Length == 2)
+                            {
+                                ip = args[++i];
+                                if (!ValidateIP(ip))
+                                {
+                                    Console.WriteLine("Invalid ip: {0}", ip);
+                                    return;
+                                }
+                            }
+                            else if (args[i].Length == 3 && args[i][2] == 'b')
+                            {
+                                ipBroadcast = args[++i];
+                                if (!ValidateIP(ipBroadcast))
+                                {
+                                    Console.WriteLine("Invalid ip BroadCast: {0}", ipBroadcast);
+                                    return;
+                                }
+                            }
+                            break;
+                        case 's':
+                            subnet = args[++i];
+                            if (!ValidateIP(subnet))
+                            {
+                                Console.WriteLine("Invalid SubNet Mask: {0}", subnet);
+                                return;
+                            }
+                            break;
+                        case 'm':
+                            mac = args[++i];
+                            mac = mac.Replace(':', '-');
+                            if (!ValidateMac(mac))
+                            {
+                                Console.WriteLine("Invalid Mac Address: {0}", mac);
+                                return;
+                            }
+                            break;
+                        default:
+                            Console.WriteLine("Unknow Option: {0}", args[i]);
+                            PrintUsage();
+                            return;
+                    }
+                }
             }
-            else
-                Console.WriteLine("Usage: WOL.exe [ip Broadcast] [MacAddress]");
+            
+            if (ipBroadcast == "")
+            {
+                if (ip == "" || subnet == "")
+                {
+                    GetCurrentIP(ref ip, ref subnet);
+                }
+                ipBroadcast = GetIPBroadcast(ip, subnet);
+            }
+
+            //Perform sent magic packet!
+            WakeFunction(ipBroadcast, mac, 9);
         }
 
         public class WOLClass : UdpClient
@@ -48,7 +106,7 @@ namespace WOL
             client.SetClientToBrodcastMode();
             //set sending bites
             int counter = 0;
-            //buffer to be send
+            //buffer to be send, this is structure of magic packet
             byte[] bytes = new byte[1024];   // more than enough :-)
                                              //first 6 bytes should be 0xFF
             for (int y = 0; y < 6; y++)
@@ -68,6 +126,147 @@ namespace WOL
 
             //now send wake up packet
             int reterned_value = client.Send(bytes, 1024);
+        }
+        static public void PrintUsage()
+        {
+            Console.WriteLine();
+            Console.WriteLine("Usage: WakeOnLan <option>\r\n");
+            Console.WriteLine(" -i <ip>             IP of destination computer.");
+            Console.WriteLine(" -s <SubNet>         Subnet Mask.");
+            Console.WriteLine(" -ib <IP Broadcast>  IP Broadcast of destination computer.");
+            Console.WriteLine(" -m <mac Address>    Mac Address of destination computer.\r\n");
+            Console.WriteLine("Note: If you have no input ip and subnet mask (or IP Broadcast), The Destination Computer will be same as your Network");
+        }
+        static bool GetCurrentIP(ref string ipout, ref string subnetout)
+        {
+            // Check network
+            if (!NetworkInterface.GetIsNetworkAvailable())
+            {
+                return false;
+            }
+
+            // Get the IP  
+            var defaultNetworkInterface = GetDefaultInterface();
+            if (defaultNetworkInterface != null)
+            {
+                foreach (var address in defaultNetworkInterface.GetIPProperties().UnicastAddresses)
+                {
+                    if (address.Address.AddressFamily != AddressFamily.InterNetwork)
+                    {
+                        continue;
+                    }
+                    if (address.IsTransient)
+                    {
+                        continue;
+                    }
+
+                    ipout = address.Address.ToString();
+                    subnetout = address.IPv4Mask.ToString();
+                    return true;
+                }
+            }
+            return false;
+        }
+        static string GetIPBroadcast(string ipAddress, string subnetMask)
+        {
+            IPAddress ip = IPAddress.Parse(ipAddress);
+            IPAddress subnet = IPAddress.Parse(subnetMask);
+            int bits = NumberOfSetBits((int)subnet.Address);
+
+            uint mask = ~(uint.MaxValue >> bits);
+
+            // Convert the IP address to bytes.
+            byte[] ipBytes = ip.GetAddressBytes();
+
+            // BitConverter gives bytes in opposite order to GetAddressBytes().
+            byte[] maskBytes = BitConverter.GetBytes(mask).Reverse().ToArray();
+
+            byte[] startIPBytes = new byte[ipBytes.Length];
+            byte[] endIPBytes = new byte[ipBytes.Length];
+
+            // Calculate the bytes of the start and end IP addresses.
+            for (int i = 0; i < ipBytes.Length; i++)
+            {
+                startIPBytes[i] = (byte)(ipBytes[i] & maskBytes[i]);
+                endIPBytes[i] = (byte)(ipBytes[i] | ~maskBytes[i]);
+            }
+
+            // Convert the bytes to IP addresses.
+            IPAddress startIP = new IPAddress(startIPBytes);
+            IPAddress endIP = new IPAddress(endIPBytes);
+            //Console.WriteLine("{0} {1}", startIP, endIP);
+            return endIP.ToString();
+        }
+        static public int NumberOfSetBits(int i)
+        {
+            i = i - ((i >> 1) & 0x55555555);
+            i = (i & 0x33333333) + ((i >> 2) & 0x33333333);
+            return (((i + (i >> 4)) & 0x0F0F0F0F) * 0x01010101) >> 24;
+        }
+        static public NetworkInterface GetDefaultInterface()
+        {
+            var interfaces = System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces();
+            foreach (var intf in interfaces)
+            {
+                if (intf.OperationalStatus != OperationalStatus.Up)
+                {
+                    continue;
+                }
+                if (intf.NetworkInterfaceType == NetworkInterfaceType.Loopback)
+                {
+                    continue;
+                }
+
+                var properties = intf.GetIPProperties();
+                if (properties == null)
+                {
+                    continue;
+                }
+                var gateways = properties.GatewayAddresses;
+                if ((gateways == null) || (gateways.Count == 0))
+                {
+                    continue;
+                }
+                var addresses = properties.UnicastAddresses;
+                if ((addresses == null) || (addresses.Count == 0))
+                {
+                    continue;
+                }
+                return intf;
+            }
+            return null;
+        }
+        static public bool ValidateIP(string ip)
+        {
+            var ipArray = ip.Split('.');
+
+            if (ipArray.Length != 4)
+                return false;
+
+            foreach(var scope in ipArray)
+            {
+                int scopenumber;
+                if (!int.TryParse(scope,out scopenumber))
+                    return false;
+
+                if (scopenumber < 0 || scopenumber > 255)
+                    return false;
+            }
+            return true;
+        }
+        static public bool ValidateMac(string mac)
+        {
+            var macArray = mac.Split('-');
+
+            if (macArray.Length != 6)
+                return false;
+
+            foreach (var scope in macArray)
+            {
+                if (scope.Length != 2)
+                    return false;
+            }
+            return true;
         }
     }
 }
