@@ -30,7 +30,7 @@ namespace WOL
                                 ip = args[++i];
                                 if (!ValidateIP(ip))
                                 {
-                                    Console.WriteLine("Invalid ip: {0}", ip);
+                                    Console.WriteLine("Invalid IP address: {0}", ip);
                                     return;
                                 }
                             }
@@ -39,7 +39,7 @@ namespace WOL
                                 ipBroadcast = args[++i];
                                 if (!ValidateIP(ipBroadcast))
                                 {
-                                    Console.WriteLine("Invalid ip BroadCast: {0}", ipBroadcast);
+                                    Console.WriteLine("Invalid IP BroadCast: {0}", ipBroadcast);
                                     return;
                                 }
                             }
@@ -69,6 +69,12 @@ namespace WOL
                 }
             }
             
+            if (args.Length == 0 || mac == "")
+            {
+                PrintUsage();
+                return;
+            }
+
             if (ipBroadcast == "")
             {
                 if (ip == "" || subnet == "")
@@ -96,7 +102,7 @@ namespace WOL
         }
         static private void WakeFunction(string ip, string mac, int port)
         {
-            Console.WriteLine("Wake-on-LAN packet sent: ip:{0} mac:{1} port:{2}", ip, mac, port);
+            Console.WriteLine("Wake-on-LAN packet sent to IP: {0} MAC:{1}", ip, mac);
 
             string MAC_ADDRESS = string.Join("", mac.Split('-'));
             
@@ -135,7 +141,7 @@ namespace WOL
             Console.WriteLine(" -s <SubNet>         Subnet Mask.");
             Console.WriteLine(" -ib <IP Broadcast>  IP Broadcast of destination computer.");
             Console.WriteLine(" -m <mac Address>    Mac Address of destination computer.\r\n");
-            Console.WriteLine("Note: If you have no input ip and subnet mask (or IP Broadcast), The Destination Computer will be same as your Network");
+            Console.WriteLine("Note: If you have no input ip and subnet mask (or IP Broadcast), The IP Broadcast will retrieve from your default network");
         }
         static bool GetCurrentIP(ref string ipout, ref string subnetout)
         {
