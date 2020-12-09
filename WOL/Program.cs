@@ -20,7 +20,7 @@ namespace WOL
             //Parse arguments
             for (int i = 0; i < args.Length; i++)
             {
-                if (args[i][0] == '-' && args[i].Length > 1)
+                if (args[i][0] == '-' && args[i].Length > 1 && args.Length > i + 1)
                 {
                     switch(args[i][1])
                     {
