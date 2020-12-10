@@ -102,7 +102,7 @@ namespace WOL
         }
         static private void WakeFunction(string ip, string mac, int port)
         {
-            Console.WriteLine("Wake-on-LAN packet sent to IP: {0} MAC:{1}", ip, mac);
+            Console.WriteLine("Wake-on-LAN packet sent to IP: {0}, MAC:{1}", ip, mac);
 
             string MAC_ADDRESS = string.Join("", mac.Split('-'));
             
@@ -177,15 +177,9 @@ namespace WOL
         {
             IPAddress ip = IPAddress.Parse(ipAddress);
             IPAddress subnet = IPAddress.Parse(subnetMask);
-            int bits = NumberOfSetBits((int)subnet.Address);
 
-            uint mask = ~(uint.MaxValue >> bits);
-
-            // Convert the IP address to bytes.
             byte[] ipBytes = ip.GetAddressBytes();
-
-            // BitConverter gives bytes in opposite order to GetAddressBytes().
-            byte[] maskBytes = BitConverter.GetBytes(mask).Reverse().ToArray();
+            byte[] maskBytes = subnet.GetAddressBytes();
 
             byte[] startIPBytes = new byte[ipBytes.Length];
             byte[] endIPBytes = new byte[ipBytes.Length];
@@ -200,18 +194,13 @@ namespace WOL
             // Convert the bytes to IP addresses.
             IPAddress startIP = new IPAddress(startIPBytes);
             IPAddress endIP = new IPAddress(endIPBytes);
-            //Console.WriteLine("{0} {1}", startIP, endIP);
+
             return endIP.ToString();
         }
-        static public int NumberOfSetBits(int i)
-        {
-            i = i - ((i >> 1) & 0x55555555);
-            i = (i & 0x33333333) + ((i >> 2) & 0x33333333);
-            return (((i + (i >> 4)) & 0x0F0F0F0F) * 0x01010101) >> 24;
-        }
+
         static public NetworkInterface GetDefaultInterface()
         {
-            var interfaces = System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces();
+            var interfaces = NetworkInterface.GetAllNetworkInterfaces();
             foreach (var intf in interfaces)
             {
                 if (intf.OperationalStatus != OperationalStatus.Up)
