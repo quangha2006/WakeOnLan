@@ -4,13 +4,56 @@ using System.Globalization;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Text.RegularExpressions;
+using System.Diagnostics;
+using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
 namespace WOL
 {
     class Program
     {
+        [DllImport("kernel32.dll")]
+        public static extern bool AllocConsole();
+
+        [DllImport("kernel32.dll")]
+        public static extern bool FreeConsole();
+
+        [DllImport("kernel32.dll")]
+        static extern IntPtr GetConsoleWindow();
+
+        [DllImport("user32.dll")]
+        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        [DllImport("kernel32", SetLastError = true)]
+        static extern bool AttachConsole(int dwProcessId);
+
+        const int SW_HIDE = 0;
+        const int SW_SHOW = 5;
+
+        [STAThread]
         static void Main(string[] args)
+        {
+            if (!IsRanFromConsole(args)) //Winform mode
+            {
+                var handle = GetConsoleWindow();
+
+                // Hide console
+                ShowWindow(handle, SW_HIDE);
+
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new MainForm());
+            }
+            else // Console mode
+            {
+                //AttachConsole(-1);
+                //AllocConsole();
+                ProcessCommandLine(args);
+                //FreeConsole();
+            }
+            
+        }
+        public static void ProcessCommandLine(string[] args)
         {
             string ip = "";
             string subnet = "";
@@ -22,7 +65,7 @@ namespace WOL
             {
                 if (args[i][0] == '-' && args[i].Length > 1 && args.Length > i + 1)
                 {
-                    switch(args[i][1])
+                    switch (args[i][1])
                     {
                         case 'i':
                             if (args[i].Length == 2)
@@ -68,7 +111,7 @@ namespace WOL
                     }
                 }
             }
-            
+
             if (args.Length == 0 || mac == "")
             {
                 PrintUsage();
@@ -88,18 +131,6 @@ namespace WOL
             WakeFunction(ipBroadcast, mac, 9);
         }
 
-        public class WOLClass : UdpClient
-        {
-            public WOLClass() : base()
-            { }
-            //this is needed to send broadcast packet
-            public void SetClientToBrodcastMode()
-            {
-                if (this.Active)
-                    this.Client.SetSocketOption(SocketOptionLevel.Socket,
-                                              SocketOptionName.Broadcast, 0);
-            }
-        }
         static private void WakeFunction(string ip, string mac, int port)
         {
             Console.WriteLine("Wake-on-LAN packet sent to IP: {0}, MAC:{1}", ip, mac);
@@ -262,6 +293,64 @@ namespace WOL
                     return false;
             }
             return true;
+        }
+        static public bool IsRanFromConsole(string[] args) // avoid user run from console without any argument, Will print usage.
+        {
+            if (args.Length > 0)
+                return true;
+
+            string[] consoleNames = {"cmd", "bash", "ash", "dash", "ksh", "zsh", "csh","tcsh", "ch", "eshell", "fish", "psh", "pwsh", "rc","sash", "scsh", "powershell", "tcc"};
+
+            string parentProc = Process.GetCurrentProcess().Parent().ProcessName;
+
+            bool isConsole = Array.IndexOf(consoleNames, parentProc) > -1;
+
+            return isConsole;
+        }
+        
+    }
+    public class WOLClass : UdpClient
+    {
+        public WOLClass() : base()
+        { }
+        //this is needed to send broadcast packet
+        public void SetClientToBrodcastMode()
+        {
+            if (this.Active)
+                this.Client.SetSocketOption(SocketOptionLevel.Socket,
+                                          SocketOptionName.Broadcast, 0);
+        }
+    }
+    public static class ProcessExtensions
+    {
+        private static string FindIndexedProcessName(int pid)
+        {
+            var processName = Process.GetProcessById(pid).ProcessName;
+            var processesByName = Process.GetProcessesByName(processName);
+            string processIndexdName = null;
+
+            for (var index = 0; index < processesByName.Length; index++)
+            {
+                processIndexdName = index == 0 ? processName : processName + "#" + index;
+                var processId = new PerformanceCounter("Process", "ID Process", processIndexdName);
+                if ((int)processId.NextValue() == pid)
+                {
+                    return processIndexdName;
+                }
+            }
+
+            return processIndexdName;
+        }
+
+        private static Process FindPidFromIndexedProcessName(string indexedProcessName)
+        {
+            var parentId = new PerformanceCounter("Process", "Creating Process ID", indexedProcessName);
+            return Process.GetProcessById((int)parentId.NextValue());
+        }
+
+        public static Process Parent(this Process process)
+        {
+            return FindPidFromIndexedProcessName(FindIndexedProcessName(process.Id));
         }
     }
 }
