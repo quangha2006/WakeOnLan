@@ -11,11 +11,13 @@ namespace WOL
 {
     public partial class MainForm : Form
     {
+        List<PCInfo> Computers = new List<PCInfo>();
         public MainForm()
         {
             InitializeComponent();
             tabControl.DrawItem += TabControl_DrawItem;
             tabControl.SelectedIndexChanged += TabControl_SelectedIndexChanged;
+            LoadData();
         }
 
         private void TabControl_SelectedIndexChanged(object sender, EventArgs e)
@@ -73,6 +75,10 @@ namespace WOL
                 }
             }
             catch (Exception ex) { throw new Exception(ex.Message); }
+        }
+        private void LoadData()
+        {
+
         }
     }
 }
