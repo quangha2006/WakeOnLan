@@ -31,7 +31,7 @@ namespace WOL
                                 if (!ValidateIP(ip))
                                 {
                                     Console.WriteLine("Invalid IP address: {0}", ip);
-                                    return;
+                                    ExitWithError();
                                 }
                             }
                             else if (args[i].Length == 3 && args[i][2] == 'b')
@@ -40,7 +40,7 @@ namespace WOL
                                 if (!ValidateIP(ipBroadcast))
                                 {
                                     Console.WriteLine("Invalid IP BroadCast: {0}", ipBroadcast);
-                                    return;
+                                    ExitWithError();
                                 }
                             }
                             break;
@@ -49,7 +49,7 @@ namespace WOL
                             if (!ValidateIP(subnet))
                             {
                                 Console.WriteLine("Invalid SubNet Mask: {0}", subnet);
-                                return;
+                                ExitWithError();
                             }
                             break;
                         case 'm':
@@ -58,13 +58,14 @@ namespace WOL
                             if (!ValidateMac(mac))
                             {
                                 Console.WriteLine("Invalid Mac Address: {0}", mac);
-                                return;
+                                ExitWithError();
                             }
                             break;
                         default:
                             Console.WriteLine("Unknow Option: {0}", args[i]);
                             PrintUsage();
-                            return;
+                            ExitWithError();
+                            break;
                     }
                 }
             }
@@ -72,7 +73,7 @@ namespace WOL
             if (args.Length == 0 || mac == "")
             {
                 PrintUsage();
-                return;
+                ExitWithError();
             }
 
             if (ipBroadcast == "")
@@ -86,6 +87,8 @@ namespace WOL
 
             //Perform sent magic packet!
             WakeFunction(ipBroadcast, mac, 9);
+
+            Environment.Exit(0);
         }
 
         public class WOLClass : UdpClient
@@ -262,6 +265,10 @@ namespace WOL
                     return false;
             }
             return true;
+        }
+        static public void ExitWithError()
+        {
+            Environment.Exit(-1);
         }
     }
 }
