@@ -32,6 +32,7 @@
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPageDefault = new System.Windows.Forms.TabPage();
             this.tabPageAdd = new System.Windows.Forms.TabPage();
+            this.button_AddNew = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -42,7 +43,6 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl.Controls.Add(this.tabPageDefault);
             this.tabControl.Controls.Add(this.tabPageAdd);
-            this.tabControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.tabControl.Location = new System.Drawing.Point(13, 67);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
@@ -59,7 +59,7 @@
             this.tabPageDefault.Text = "Default";
             this.tabPageDefault.UseVisualStyleBackColor = true;
             // 
-            // tabPage2
+            // tabPageAdd
             // 
             this.tabPageAdd.Location = new System.Drawing.Point(4, 22);
             this.tabPageAdd.Name = "tabPageAdd";
@@ -69,11 +69,22 @@
             this.tabPageAdd.Text = "Add";
             this.tabPageAdd.UseVisualStyleBackColor = true;
             // 
+            // button_AddNew
+            // 
+            this.button_AddNew.Location = new System.Drawing.Point(13, 13);
+            this.button_AddNew.Name = "button_AddNew";
+            this.button_AddNew.Size = new System.Drawing.Size(75, 23);
+            this.button_AddNew.TabIndex = 1;
+            this.button_AddNew.Text = "Add New";
+            this.button_AddNew.UseVisualStyleBackColor = true;
+            this.button_AddNew.Click += new System.EventHandler(this.button_AddNew_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.button_AddNew);
             this.Controls.Add(this.tabControl);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
@@ -88,5 +99,6 @@
         private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage tabPageDefault;
         private System.Windows.Forms.TabPage tabPageAdd;
+        private System.Windows.Forms.Button button_AddNew;
     }
 }

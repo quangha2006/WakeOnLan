@@ -33,18 +33,21 @@ namespace WOL
 
         private void CreateTabPage(int index)
         {
+            tabControl.TabPages[index].Text = $"tabPage{index}";
+            tabControl.TabPages[index].Name = $"tabPage{index}";
+
             var tabPageNew = new TabPage();
 
             tabPageNew.Location = new System.Drawing.Point(4, 22);
-            tabPageNew.Name = $"tabPage{index}";
+            tabPageNew.Name = "tabPageNew";
             tabPageNew.Padding = new System.Windows.Forms.Padding(3);
             tabPageNew.Size = new System.Drawing.Size(767, 345);
             tabPageNew.TabIndex = 0;
-            tabPageNew.Text = $"tabPage{index}";
+            tabPageNew.Text = "Add";
             tabPageNew.UseVisualStyleBackColor = true;
 
             tabControl.Controls.Add(tabPageNew);
-            tabControl.TabPages[index].Text = $"tabPage{index}";
+
         }
 
         private void TabControl_DrawItem(object sender, DrawItemEventArgs e)
@@ -79,6 +82,20 @@ namespace WOL
         private void LoadData()
         {
 
+        }
+
+        private void button_AddNew_Click(object sender, EventArgs e)
+        {
+            PCInfo NewComputer = new PCInfo //Fake info
+            {
+                Name = "PC1",
+                Ip = "192.168.1.100",
+                Mac = "E0-D5-5E-48-82-B9",
+                IpStart = "192.168.1.1",
+                IpEnd = "192.168.1.255",
+                GroupName = "Dev"
+            };
+            Computers.Add(NewComputer);
         }
     }
 }
