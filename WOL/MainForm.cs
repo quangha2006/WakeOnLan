@@ -58,15 +58,50 @@ namespace WOL
                     TabPage tabpageNew = new TabPage();
                     tabpageNew.Text = pc.GroupName;
                     tabpageNew.Name = pc.GroupName;
+                    
+                    var listviewNew = CreateListView();
+                    tabpageNew.Controls.Add(listviewNew);
+
                     tabControl_main.TabPages.Add(tabpageNew);
                 }
-                else
-                {
-                    var tabpage = tabControl_main.TabPages[tabControl_main.TabPages.IndexOfKey(pc.GroupName)];
-
-
-                }
+                
+                var tabpage = tabControl_main.TabPages[tabControl_main.TabPages.IndexOfKey(pc.GroupName)];
+                ListView listview = (ListView)tabpage.Controls[0];
+                var item = new ListViewItem(new string[] { listview.Items.Count.ToString(), pc.Name, pc.Ip, pc.Mac});
+                listview.Items.Add(item);
             }
+        }
+        private ListView CreateListView()
+        {
+            ListView listview = new ListView();
+            ColumnHeader column_STT         = new ColumnHeader() {Text = "STT",         TextAlign = HorizontalAlignment.Center, Width = 50 };
+            ColumnHeader column_Name        = new ColumnHeader() {Text = "Name",        TextAlign = HorizontalAlignment.Center, Width = 150 };
+            ColumnHeader column_IP          = new ColumnHeader() {Text = "IP",          TextAlign = HorizontalAlignment.Center, Width = 120 };
+            ColumnHeader column_Mac         = new ColumnHeader() {Text = "Mac",         TextAlign = HorizontalAlignment.Center, Width = 120 };
+            ColumnHeader column_IPBroadcast = new ColumnHeader() {Text = "Broadcast",   TextAlign = HorizontalAlignment.Center, Width = 120 };
+            ColumnHeader column_Status      = new ColumnHeader() {Text = "Status",      TextAlign = HorizontalAlignment.Center, Width = 60 };
+            ColumnHeader column_Start       = new ColumnHeader() {Text = "Start",       TextAlign = HorizontalAlignment.Center, Width = 100 };
+            listview.Columns.AddRange(new ColumnHeader[]{
+                column_STT, 
+                column_Name , 
+                column_IP , 
+                column_Mac , 
+                column_IPBroadcast, 
+                column_Status, 
+                column_Start });
+            listview.Anchor = ((AnchorStyles)((((AnchorStyles.Top | AnchorStyles.Bottom)
+            | AnchorStyles.Left)
+            | AnchorStyles.Right)));
+            listview.FullRowSelect = true;
+            listview.GridLines = true;
+            listview.HideSelection = false;
+            listview.Location = new System.Drawing.Point(0, 0);
+            listview.Name = "listView";
+            listview.Size = new System.Drawing.Size(342, 534);
+            listview.TabIndex = 0;
+            listview.UseCompatibleStateImageBehavior = false;
+            listview.View = View.Details;
+            return listview;
         }
         private void backgroundWorker_SaveData_DoWork(object sender, DoWorkEventArgs e)
         {
