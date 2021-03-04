@@ -12,80 +12,16 @@ namespace WOL
     public partial class MainForm : Form
     {
         List<PCInfo> Computers = new List<PCInfo>();
+        string saveFileName = "data.json";
         public MainForm()
         {
             InitializeComponent();
-            tabControl.DrawItem += TabControl_DrawItem;
-            tabControl.SelectedIndexChanged += TabControl_SelectedIndexChanged;
-            LoadData();
+            backgroundWorker_LoadData.RunWorkerAsync(saveFileName);
         }
 
-        private void TabControl_SelectedIndexChanged(object sender, EventArgs e)
+        private void LoadData(string filename)
         {
-            try
-            {
-                // If the last TabPage is selected then Create a new TabPage
-                if (tabControl.SelectedIndex == tabControl.TabPages.Count - 1)
-                    CreateTabPage(tabControl.SelectedIndex);
-            }
-            catch (Exception ex) { throw new Exception(ex.Message); }
-        }
-
-        private void CreateTabPage(int index)
-        {
-            tabControl.TabPages[index].Text = $"tabPage{index}";
-            tabControl.TabPages[index].Name = $"tabPage{index}";
-
-            var tabPageNew = new TabPage();
-
-            tabPageNew.Location = new System.Drawing.Point(4, 22);
-            tabPageNew.Name = "tabPageNew";
-            tabPageNew.Padding = new System.Windows.Forms.Padding(3);
-            tabPageNew.Size = new System.Drawing.Size(767, 345);
-            tabPageNew.TabIndex = 0;
-            tabPageNew.Text = "Add";
-            tabPageNew.UseVisualStyleBackColor = true;
-
-            tabControl.Controls.Add(tabPageNew);
-
-        }
-
-        private void TabControl_DrawItem(object sender, DrawItemEventArgs e)
-        {
-            try
-            {
-                var tabPage = this.tabControl.TabPages[e.Index];
-                var tabRect = this.tabControl.GetTabRect(e.Index);
-                tabRect.Inflate(-2, -2);
-                if (e.Index == this.tabControl.TabCount - 1) // Add button to the last TabPage only
-                {
-                    //var addImage = new Bitmap(addButtonFullPath);
-                    //e.Graphics.DrawImage(addImage,
-                    //    tabRect.Left + (tabRect.Width - addImage.Width) / 2,
-                    //    tabRect.Top + (tabRect.Height - addImage.Height) / 2);
-                    TextRenderer.DrawText(e.Graphics, "Add", tabPage.Font,
-                        tabRect, tabPage.ForeColor, TextFormatFlags.HorizontalCenter);
-                    
-                }
-                else // draw Close button to all other TabPages
-                {
-                    //var closeImage = new Bitmap(closeButtonFullPath);
-                    //e.Graphics.DrawImage(closeImage,
-                    //    (tabRect.Right - closeImage.Width),
-                    //    tabRect.Top + (tabRect.Height - closeImage.Height) / 2);
-                    TextRenderer.DrawText(e.Graphics, tabPage.Text, tabPage.Font,
-                        tabRect, tabPage.ForeColor, TextFormatFlags.Left);
-                }
-            }
-            catch (Exception ex) { throw new Exception(ex.Message); }
-        }
-        private void LoadData()
-        {
-
-        }
-
-        private void button_AddNew_Click(object sender, EventArgs e)
-        {
+            //Fake LoadData
             PCInfo NewComputer = new PCInfo //Fake info
             {
                 Name = "PC1",
@@ -95,7 +31,50 @@ namespace WOL
                 IpEnd = "192.168.1.255",
                 GroupName = "Dev"
             };
+            PCInfo NewComputer2 = new PCInfo //Fake info
+            {
+                Name = "PC2",
+                Ip = "192.168.1.100",
+                Mac = "E0-D5-5E-48-82-B9",
+                IpStart = "192.168.1.1",
+                IpEnd = "192.168.1.255",
+                GroupName = "QA"
+            };
             Computers.Add(NewComputer);
+            Computers.Add(NewComputer2);
+        }
+
+        private void backgroundWorker_LoadData_DoWork(object sender, DoWorkEventArgs e)
+        {
+            string filename = e.Argument.ToString();
+            LoadData(filename);
+        }
+        private void backgroundWorker_LoadData_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            foreach (var pc in Computers)
+            {
+                if (!tabControl_main.TabPages.ContainsKey(pc.GroupName))
+                {
+                    TabPage tabpageNew = new TabPage();
+                    tabpageNew.Text = pc.GroupName;
+                    tabpageNew.Name = pc.GroupName;
+                    tabControl_main.TabPages.Add(tabpageNew);
+                }
+                else
+                {
+                    var tabpage = tabControl_main.TabPages[tabControl_main.TabPages.IndexOfKey(pc.GroupName)];
+
+
+                }
+            }
+        }
+        private void backgroundWorker_SaveData_DoWork(object sender, DoWorkEventArgs e)
+        {
+
+        }
+        private void button_AddNew_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }
