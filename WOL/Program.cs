@@ -139,6 +139,7 @@ namespace WOL
             
             WOLClass client = new WOLClass();
 
+            this.Client.EnableBroadcast = true;
             client.Connect(IPAddress.Parse(ip), port);
             client.SetClientToBrodcastMode();
             //set sending bites
@@ -317,8 +318,10 @@ namespace WOL
         public void SetClientToBrodcastMode()
         {
             if (this.Active)
+            {
                 this.Client.SetSocketOption(SocketOptionLevel.Socket,
                                           SocketOptionName.Broadcast, 0);
+            }
         }
     }
     public static class ProcessExtensions
