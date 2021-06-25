@@ -139,8 +139,10 @@ namespace WOL
             
             WOLClass client = new WOLClass();
 
-            this.Client.EnableBroadcast = true;
+            client.EnableBroadcast = true;
+
             client.Connect(IPAddress.Parse(ip), port);
+
             client.SetClientToBrodcastMode();
             //set sending bites
             int counter = 0;
