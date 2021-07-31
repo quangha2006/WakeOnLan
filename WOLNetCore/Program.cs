@@ -26,6 +26,7 @@ namespace WOL
                 {
                     switch (args[i][1])
                     {
+                        case 'I':
                         case 'i':
                             if (args[i].Length == 2)
                             {
@@ -33,40 +34,43 @@ namespace WOL
                                 if (!ValidateIP(ip))
                                 {
                                     Console.WriteLine("Invalid IP address: {0}", ip);
-                                    return;
+                                    ExitWithError();
                                 }
                             }
-                            else if (args[i].Length == 3 && args[i][2] == 'b')
+                            else if (args[i].Length == 3 && (args[i][2] == 'b' || args[i][2] == 'B'))
                             {
                                 ipBroadcast = args[++i];
                                 if (!ValidateIP(ipBroadcast))
                                 {
                                     Console.WriteLine("Invalid IP BroadCast: {0}", ipBroadcast);
-                                    return;
+                                    ExitWithError();
                                 }
                             }
                             break;
+                        case 'S':
                         case 's':
                             subnet = args[++i];
                             if (!ValidateIP(subnet))
                             {
                                 Console.WriteLine("Invalid SubNet Mask: {0}", subnet);
-                                return;
+                                ExitWithError();
                             }
                             break;
+                        case 'M':
                         case 'm':
                             mac = args[++i];
                             mac = mac.Replace(':', '-');
                             if (!ValidateMac(mac))
                             {
                                 Console.WriteLine("Invalid Mac Address: {0}", mac);
-                                return;
+                                ExitWithError();
                             }
                             break;
                         default:
                             Console.WriteLine("Unknow Option: {0}", args[i]);
                             PrintUsage();
-                            return;
+                            ExitWithError();
+                            break;
                     }
                 }
             }
@@ -74,7 +78,7 @@ namespace WOL
             if (args.Length == 0 || mac == "")
             {
                 PrintUsage();
-                return;
+                ExitWithError();
             }
 
             if (ipBroadcast == "")
@@ -88,6 +92,7 @@ namespace WOL
 
             //Perform sent magic packet!
             WakeFunction(ipBroadcast, mac, 9);
+            Environment.Exit(0);
         }
 
         static private void WakeFunction(string ip, string mac, int port)
@@ -132,10 +137,10 @@ namespace WOL
         {
             Console.WriteLine();
             Console.WriteLine("Usage: WakeOnLan <option>\r\n");
-            Console.WriteLine(" -i  <ip>             IP of destination computer.");
-            Console.WriteLine(" -s  <SubNet>         Subnet Mask.");
-            Console.WriteLine(" -ib <IP Broadcast>   IP Broadcast of destination computer.");
-            Console.WriteLine(" -m  <mac Address>    Mac Address of destination computer.\r\n");
+            Console.WriteLine(" -I  <ip>             IP of destination computer.");
+            Console.WriteLine(" -S  <SubNet>         Subnet Mask.");
+            Console.WriteLine(" -IB <IP Broadcast>   IP Broadcast of destination computer.");
+            Console.WriteLine(" -M  <mac Address>    Mac Address of destination computer.\r\n");
             Console.WriteLine("Note: If you have no input ip and subnet mask (or IP Broadcast), The IP Broadcast will retrieve from your default network");
         }
         static bool GetCurrentIP(ref string ipout, ref string subnetout)
@@ -257,6 +262,10 @@ namespace WOL
                     return false;
             }
             return true;
+        }
+        static public void ExitWithError()
+        {
+            Environment.Exit(-1);
         }
     }
     public class WOLClass : UdpClient
