@@ -92,8 +92,6 @@ namespace WOL
 
         static private void WakeFunction(string ip, string mac, int port)
         {
-            Console.WriteLine("Wake-on-LAN packet sent to IP: {0}, MAC:{1}", ip, mac);
-
             string MAC_ADDRESS = string.Join("", mac.Split('-'));
             
             WOLClass client = new WOLClass();
@@ -125,6 +123,10 @@ namespace WOL
 
             //now send wake up packet
             int reterned_value = client.Send(bytes, 1024);
+            if (reterned_value > 0)
+                Console.WriteLine("Wake-on-LAN packet sent to IP: {0}, MAC:{1}", ip, mac);
+            else
+                Console.WriteLine("Wake-on-LAN send packet failed: {0}, MAC:{1}", ip, mac);
         }
         static public void PrintUsage()
         {
