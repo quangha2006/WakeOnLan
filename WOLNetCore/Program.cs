@@ -129,9 +129,9 @@ namespace WOL
             //now send wake up packet
             int reterned_value = client.Send(bytes, 1024);
             if (reterned_value > 0)
-                Console.WriteLine("Wake-on-LAN packet sent to IP: {0}, MAC:{1}", ip, mac);
+                Console.Write("Wake-on-LAN packet sent to IP: {0}, MAC:{1}", ip, mac);
             else
-                Console.WriteLine("Wake-on-LAN send packet failed: {0}, MAC:{1}", ip, mac);
+                Console.Write("Wake-on-LAN send packet failed: {0}, MAC:{1}", ip, mac);
         }
         static public void PrintUsage()
         {
