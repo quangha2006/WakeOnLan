@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.30621.155
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WOL", "WOL\WOL.csproj", "{8A36FCC4-C408-401E-9544-7198D4A849D8}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WOLNetCore", "WOLNetCore\WOLNetCore.csproj", "{7995EEDC-ECC4-46CE-80AC-3F94EBB8566E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{8A36FCC4-C408-401E-9544-7198D4A849D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A36FCC4-C408-401E-9544-7198D4A849D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A36FCC4-C408-401E-9544-7198D4A849D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7995EEDC-ECC4-46CE-80AC-3F94EBB8566E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7995EEDC-ECC4-46CE-80AC-3F94EBB8566E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7995EEDC-ECC4-46CE-80AC-3F94EBB8566E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7995EEDC-ECC4-46CE-80AC-3F94EBB8566E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
