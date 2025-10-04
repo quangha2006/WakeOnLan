@@ -1,1 +1,4 @@
 ﻿.vs
+WakeOnLan.Cli/obj
+WakeOnLan.Core/obj
+WakeOnLan.Wpf/obj
