@@ -14,12 +14,15 @@ namespace WakeOnLan.Core.Utils
         public static byte[] ParseMac(string mac)
         {
             if (string.IsNullOrWhiteSpace(mac))
-                throw new ArgumentException("MAC address is empty.", nameof(mac));
+                throw new ArgumentException("2 MAC address is empty.", nameof(mac));
 
-            // Accept: AA:BB:CC:DD:EE:FF | AA-BB-CC-DD-EE-FF | AABBCCDDEEFF
             var cleaned = Regex.Replace(mac.Trim(), "[-:\\s]", "").ToUpperInvariant();
-            if (cleaned.Length != 12 || !Regex.IsMatch(cleaned, "^[0-9A-F]{12}$"))
+            Console.WriteLine(cleaned);
+            Console.WriteLine(cleaned.Length);
+            if (cleaned.Length != 12 || !Regex.IsMatch(cleaned, "^([0-9A-F]{12})$"))
+            {
                 throw new FormatException($"Invalid MAC address: {mac}, Accept: AA:BB:CC:DD:EE:FF | AA-BB-CC-DD-EE-FF | AABBCCDDEEFF");
+            }
 
             var bytes = new byte[6];
             for (int i = 0; i < 6; i++)

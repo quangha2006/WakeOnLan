@@ -5,7 +5,7 @@ namespace WakeOnLan
 {
     class Program
     {
-        static async void Main(string[] args)
+        static async Task Main(string[] args)
         {
             if (args.Length == 0 || (args.Length >= 1 && args[0] is "-h" or "--help"))
             {
@@ -61,10 +61,9 @@ namespace WakeOnLan
                         case 'M':
                         case 'm':
                             mac = args[++i];
-                            mac = mac.Replace(':', '-');
                             if (!NetUtils.TryParseMac(mac, out byte[] bytes))
                             {
-                                Console.WriteLine("Invalid Mac Address: {0}", mac);
+                                Console.WriteLine($"1 Invalid MAC address: {mac}, Accept: AA:BB:CC:DD:EE:FF | AA-BB-CC-DD-EE-FF | AABBCCDDEEFF");
                                 ExitWithError();
                             }
                             break;
@@ -95,7 +94,7 @@ namespace WakeOnLan
             //Perform sent magic packet!
             try
             {
-                await WakeOnLanClient.SendMagicPacketAsync(ipBroadcast, mac, 9);
+                await WakeOnLanClient.SendMagicPacketAsync(mac, ipBroadcast, 9);
             }
             catch (Exception ex)
             {
