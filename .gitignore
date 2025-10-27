@@ -2,3 +2,5 @@
 WakeOnLan.Cli/obj
 WakeOnLan.Core/obj
 WakeOnLan.Wpf/obj
+WakeOnLan.Cli/bin
+WakeOnLan.Core/bin
