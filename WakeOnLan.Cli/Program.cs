@@ -94,7 +94,8 @@ namespace WakeOnLan
             //Perform sent magic packet!
             try
             {
-                await WakeOnLanClient.SendMagicPacketAsync(mac, ipBroadcast, 9);
+                var result = await WakeOnLanClient.SendMagicPacketAsync(mac, ipBroadcast, 9);
+                Console.WriteLine(result);
             }
             catch (Exception ex)
             {

@@ -17,8 +17,6 @@ namespace WakeOnLan.Core.Utils
                 throw new ArgumentException("2 MAC address is empty.", nameof(mac));
 
             var cleaned = Regex.Replace(mac.Trim(), "[-:\\s]", "").ToUpperInvariant();
-            Console.WriteLine(cleaned);
-            Console.WriteLine(cleaned.Length);
             if (cleaned.Length != 12 || !Regex.IsMatch(cleaned, "^([0-9A-F]{12})$"))
             {
                 throw new FormatException($"Invalid MAC address: {mac}, Accept: AA:BB:CC:DD:EE:FF | AA-BB-CC-DD-EE-FF | AABBCCDDEEFF");

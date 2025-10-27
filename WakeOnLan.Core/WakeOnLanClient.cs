@@ -48,7 +48,7 @@ namespace WakeOnLan.Core
                 throw new Exception($"Wake-on-LAN send packet failed: {ipBroadcast}, MAC:{macAddress}");
             }
 
-            return $"Wake-on-LAN packet sent to IP: {ipBroadcast}, MAC:{macAddress}";
+            return $"The wake-on-lan packet was successfully sent to IP = {ipBroadcast}, MAC = {macAddress}";
         }
     }
     public class WakeOnLanUdpClient : UdpClient
