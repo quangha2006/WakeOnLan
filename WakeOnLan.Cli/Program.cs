@@ -63,7 +63,7 @@ namespace WakeOnLan
                             mac = args[++i];
                             if (!NetUtils.TryParseMac(mac, out byte[] bytes))
                             {
-                                Console.WriteLine($"1 Invalid MAC address: {mac}, Accept: AA:BB:CC:DD:EE:FF | AA-BB-CC-DD-EE-FF | AABBCCDDEEFF");
+                                Console.WriteLine($"Invalid MAC address: {mac}, Accept: AA:BB:CC:DD:EE:FF | AA-BB-CC-DD-EE-FF | AABBCCDDEEFF");
                                 ExitWithError();
                             }
                             break;

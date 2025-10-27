@@ -114,7 +114,7 @@ namespace WakeOnLan.Core.Utils
                     {
                         continue;
                     }
-                    if (address.IsTransient)
+                    if (OperatingSystem.IsWindows() && address.IsTransient)
                     {
                         continue;
                     }
