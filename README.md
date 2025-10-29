@@ -2,11 +2,42 @@
 
 A minimal, multi-project .NET 8 solution that lets you wake PCs on your network (Wake-on-LAN) in two ways:
 
-- WPF App — a simple Windows UI to send Magic Packets.
-
 - Console App — a CLI for scripting/automation.
+- WPF App — a simple Windows UI to send Magic Packets. (TODO)
+- Web App (TODO)
 
+# Usage (Console App)
 
+You can use the **CLI tool** to send Wake-on-LAN packets from a terminal or script.
+
+```bash
+WakeOnLan <option>
+```
+## Options
+```
+Option	Description
+-I      <ip>  	          IP address of the destination computer.
+-S      <subnet>  	      Subnet mask of your network.
+-IB     <ip broadcast>    Broadcast IP of the destination computer.
+-M      <mac address> 	  MAC address of the destination computer.
+```
+## Examples:
+### 1.Send WOL using only MAC (auto-detect network)
+```bash
+$ WakeOnLan -M 00-1A-2B-3C-4D-5E
+```
+### 2.Send WOL using IP and subnet mask
+```bash
+$ WakeOnLan -I 192.168.1.100 -S 255.255.255.0 -M 00-1A-2B-3C-4D-5E
+```
+### 3.Send WOL using broadcast IP
+```bash
+$ WakeOnLan -IB 192.168.1.255 -M 00-1A-2B-3C-4D-5E
+```
+## Expected output:
+```bash
+The wake-on-lan packet was successfully sent to IP = 192.168.1.255, MAC = 00-1A-2B-3C-4D-5E
+```
 # Features
 
 - Send Wake-on-LAN (WOL) Magic Packets (UDP, port 9 by default).
@@ -22,8 +53,6 @@ A minimal, multi-project .NET 8 solution that lets you wake PCs on your network 
   - `NetUtils.ParseMac(...), NetUtils.ValidateIP(...)`
 
   - `NetUtils.GetDefaultInterface(...)` to discover the system’s default NIC & local IP.
-
-  - ...
 
 # Requirements
 
