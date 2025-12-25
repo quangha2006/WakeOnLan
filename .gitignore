@@ -4,3 +4,7 @@ WakeOnLan.Core/obj
 WakeOnLan.Wpf/obj
 WakeOnLan.Cli/bin
 WakeOnLan.Core/bin
+WakeOnLan.WebApp/bin
+WakeOnLan.WebApp/obj
+WakeOnLan.WebApp/wwwroot/lib
+WakeOnLan.WebApp/WakeOnLan.WebApp.csproj.user
