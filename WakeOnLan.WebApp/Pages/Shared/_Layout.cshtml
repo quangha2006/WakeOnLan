@@ -1,0 +1,81 @@
+﻿@{
+    var title = ViewData["Title"] as string;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(string.IsNullOrWhiteSpace(title) ? "Wake On Lan Tool" : $"{title} - Wake On Lan Tool")</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+
+<body class="bg-light d-flex flex-column min-vh-100">
+    <header>
+        <nav class="navbar navbar-expand navbar-dark bg-dark border-bottom box-shadow mb-4">
+            <div class="container">
+                <a class="navbar-brand fw-semibold d-flex align-items-center gap-2" asp-page="/Index">
+                    <img src="~/assets/logo.png"
+                         alt="Wake On Lan Tool"
+                         width="28"
+                         height="28"
+                         class="d-inline-block align-text-top" />
+                    <span>Wake On Lan Tool</span>
+                </a>
+
+                <div class="navbar-collapse">
+                    <ul class="navbar-nav ms-auto align-items-lg-center">
+                        @if (User?.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item me-2">
+                                <span class="nav-link disabled opacity-75">
+                                    @User.Identity!.Name
+                                </span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-outline-light btn-sm" href="/logout">Logout</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="btn btn-outline-light btn-sm" href="/login">Login</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container flex-grow-1">
+        <main role="main" class="pb-0">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top text-muted bg-white mt-auto footer">
+        <div class="container py-3 d-flex flex-column flex-md-row gap-2 justify-content-between align-items-md-center">
+            <div>
+                © 2025 <span class="fw-semibold">Wake On Lan Tool</span>
+                <span class="ms-2">•</span>
+                <span class="ms-2">
+                    Email: <a href="mailto:hdquang@gmail.com">hdquang@gmail.com</a>
+                </span>
+            </div>
+
+            <div class="d-flex gap-3">
+                <a class="text-muted text-decoration-none" href="https://hdquang.net" target="_blank" rel="noopener">hdquang.net</a>
+                <a class="text-muted text-decoration-none" href="https://github.com/quangha2006/WakeOnLan" target="_blank" rel="noopener">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
